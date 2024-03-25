@@ -18,9 +18,19 @@ export default function generatePdf({ data, headers, filename, additionalInfo })
     // Calculate column widths based on the number of columns
     const columnWidth = (pageWidth - 2 * pageMargin) / headers.length;
 
+    // Define hospital name and address
+    const hospitalName = 'Dev Clinic';
+    const hospitalAddress = 'Sr No 145/4, Alandi Road, Pune, Maharashtra, India';
+
+    // Draw hospital name and address
+    doc.setFont('helvetica', 'bold');
+    doc.text(hospitalName, pageMargin, pageMargin);
+    doc.setFont('helvetica', 'normal');
+    doc.text(hospitalAddress, pageMargin, pageMargin + 20);
+
     // Calculate position for IPD Billing Summary
     const ipdSummaryX = pageWidth / 2;
-    const ipdSummaryY = pageMargin + 20;
+    const ipdSummaryY = pageMargin + 60; // Adjust based on hospital name and address
 
     // Draw IPD Billing Summary heading at the top of the page
     doc.setFont('helvetica', 'bold');
@@ -29,15 +39,12 @@ export default function generatePdf({ data, headers, filename, additionalInfo })
     doc.line(pageMargin, ipdSummaryY + 5, pageWidth - pageMargin, ipdSummaryY + 5); // Draw underline
 
     // Draw additional information in dynamic layout
-    const additionalInfoX = pageMargin;
     let additionalInfoY = ipdSummaryY + 30;
     const additionalInfoPadding = 20;
     doc.setFont('helvetica', 'bold'); // Set font style to bold for additional information
 
     // Define additional information content
     const infoContent = [
-      { label: 'Hospital Name', value: 'Dev clinic' },
-      { label: 'Address', value: 'Sr No 145/4, Alandi Road dsfsef sdvbsdb bdxvd bxcovsdbvxb xvd563534 ergrd dgvdfb' },
       { label: 'Name', value: 'Rishabh Sahu' },
       { label: 'Bill No', value: '1231' },
       { label: 'IPD No', value: '3432535' },
@@ -48,19 +55,7 @@ export default function generatePdf({ data, headers, filename, additionalInfo })
     // Draw additional information
     infoContent.forEach(info => {
       const { label, value } = info;
-      if (label === 'Hospital Name') {
-        doc.text(`${label}: ${value}`, additionalInfoX, additionalInfoY);
-      } else if (label === 'Address') {
-        const textWidth = doc.getStringUnitWidth(`${label}: ${value}`) * doc.internal.getFontSize();
-        const textHeight = doc.internal.getLineHeight();
-        if (additionalInfoY + textHeight > pageHeight - pageMargin) {
-          additionalInfoY = ipdSummaryY + 30;
-          additionalInfoY += additionalInfoPadding;
-        }
-        doc.text(`${label}: ${value}`, additionalInfoX, additionalInfoY); // Align value to the left
-      } else {
-        doc.text(`${label}: ${value}`, additionalInfoX, additionalInfoY);
-      }
+      doc.text(`${label}: ${value}`, pageMargin, additionalInfoY);
       additionalInfoY += additionalInfoPadding;
     });
 
@@ -103,6 +98,17 @@ export default function generatePdf({ data, headers, filename, additionalInfo })
       // Draw horizontal line at the bottom of the row
       doc.line(pageMargin, yPosition + 20, pageWidth - pageMargin, yPosition + 20);
     });
+
+    // Draw total row
+    const totalRowY = tableStartY + (data.length + 1) * 20; // Additional row for headers
+    const totalRowHeight = 20;
+    doc.setFillColor(200, 200, 200); // Set background color for total row
+    doc.rect(pageMargin, totalRowY, pageWidth - 2 * pageMargin, totalRowHeight, 'F'); // Draw filled rectangle for total row
+    doc.setTextColor(0); // Reset text color
+    doc.setFont('helvetica', 'bold'); // Set font style to bold
+    doc.text('Total', pageMargin + padding, totalRowY + totalRowHeight / 2 + 5); // Align total text to the left
+    const totalValue = data.reduce((acc, curr) => acc + parseFloat(curr['Total']), 0).toFixed(2); // Assuming 'Total' is a field in the data
+    doc.text(totalValue, pageWidth - pageMargin - padding - doc.getStringUnitWidth(totalValue) * doc.internal.getFontSize(), totalRowY + totalRowHeight / 2 + 5); // Align total value to the right
 
     // Generate blob directly
     try {
