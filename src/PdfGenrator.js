@@ -31,10 +31,10 @@ const PdfGenerator = ({ tableData }) => {
     const formData = new FormData();
     formData.append("pdfFile", pdfBlob, "generated.pdf");
 
-    fetch("https://testapi.bharathealpoint.com/files", {
+    fetch("https://testap.com/files", {
       headers: {
         Authorization:
-          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjQwYTYzMjAwLWI5Y2EtNDEyMC1hOTA4LTFmNDUwNWZiNjYyOSIsInJvbGUiOiJiOWJjN2EyYi1iMThjLTQ1NjktOTNlNi02ZDI5YjllYjI0YTIiLCJhcHBfYWNjZXNzIjpmYWxzZSwiYWRtaW5fYWNjZXNzIjpmYWxzZSwiaWF0IjoxNzExMDUxODE4LCJleHAiOjE3MTg4Mjc4MTgsImlzcyI6ImRpcmVjdHVzIn0.UZCi-gRx2UF3etQRcvZ8MrZB5m7Fmv8qKHW40l34CHo",
+          "Bearer eyJWF0IjIn0.UZCi-gRx2UF3etQRcvZ8MrZB5m7Fmv8qKHW40l34CHo",
       },
       method: "POST",
       body: formData,
